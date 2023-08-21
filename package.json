@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "husky install",
     "dev": "next dev",
     "dk:refresh": "npm run dk:remove && npm install ../toy-design-kit",
     "dk:restore": "npm run dk:remove && npm install toy-design-kit",
     "dk:remove": "npm uninstall toy-design-kit",
-    "lint": "next lint",
+    "lint": "next lint --fix",
     "build": "next build",
     "next-ssg": "npx serve --listen 13000 ./build"
   },
@@ -25,6 +26,11 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^37.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^5.0.0-canary-7118f5dd7-20230705",
+    "husky": "^8.0.3",
     "serve": "^14.2.0"
   }
 }

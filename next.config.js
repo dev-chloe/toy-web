@@ -9,9 +9,13 @@ const nextConfig = {
       ssr: true, // Enable SSR support
     },
   },
+  // https://nextjs.org/docs/pages/building-your-application/configuring/eslint#linting-custom-directories-and-files
+  eslint: {
+    dirs: ["app"],
+  },
   // Build outputs
   output: "export",
   distDir: "build",
-}
+};
 
 module.exports = nextConfig;
