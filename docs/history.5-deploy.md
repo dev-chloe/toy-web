@@ -59,3 +59,26 @@ npm run next-ssg
 # Check in the browser
 open http://localhost:13000/
 ```
+
+## B. [Deploy the static site generation bundle to Amazon S3 bucket](https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli-services-s3-commands.html#using-s3-commands-managing-objects-sync)
+
+```bash
+# Check local directory(source)
+ls -shl "./build/."
+
+# Set environment variable
+export TARGET_WEB_BUCKET="web.dev.poc-in.site"
+env | grep "TARGET_WEB_BUCKET"
+
+# Check current state of remote S3 bucket(target)
+aws s3 ls "s3://${TARGET_WEB_BUCKET:?}"
+# (option) Remove objects in target bucket
+aws s3 rm "s3://${TARGET_WEB_BUCKET:?}" --recursive
+
+# Sync objects from source to target
+aws s3 sync "./build/." "s3://${TARGET_WEB_BUCKET:?}"
+# Check result state remote S3 bucket(target)
+aws s3 ls "s3://${TARGET_WEB_BUCKET:?}"
+
+# TODO: Refresh cache data in CloudFront(CDN)
+```
