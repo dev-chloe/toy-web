@@ -1,16 +1,38 @@
 {
   "name": "toy-web",
   "version": "0.1.0",
+  "description": "Toy Web using Toy Design Kit",
   "private": true,
+  "author": "dev-chloe <chloekim.4969@gmail.com>",
+  "homepage": "https://github.com/dev-chloe/toy-web#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-chloe/toy-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dev-chloe/toy-web/issues"
+  },
+  "readme": "./README.md",
   "scripts": {
+    "prepare": "husky install",
     "dev": "next dev",
     "dk:refresh": "npm run dk:remove && npm install ../toy-design-kit",
     "dk:restore": "npm run dk:remove && npm install toy-design-kit",
     "dk:remove": "npm uninstall toy-design-kit",
-    "lint": "next lint",
-    "build": "next build",
+    "lint": "next lint --fix",
+    "clean": "run-p clean:*",
+    "clean:cache": "rimraf ./.next",
+    "clean:bundle": "rimraf ./build",
+    "build": "run-s clean build:check build:bundle",
+    "build:check": "LOCAL_DEPEND_COUNT=$(jq '.dependencies.\"toy-design-kit\"' package.json | tr -d '\"' | grep 'file:' | wc -l | tr -d ' ') && [[ ${LOCAL_DEPEND_COUNT} > 0 ]] && echo '[FAIL] Invalid dependencies: Replace \"file:../toy-design-kit\" in ./package.json' && echo '' && exit 1 || exit 0",
+    "build:bundle": "next build",
     "next-ssg": "npx serve --listen 13000 ./build"
   },
+  "keywords": [
+    "react",
+    "next",
+    "next-ssg"
+  ],
   "dependencies": {
     "@types/node": "20.4.5",
     "@types/react": "18.2.17",
@@ -25,6 +47,13 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^37.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^5.0.0-canary-7118f5dd7-20230705",
+    "husky": "^8.0.3",
+    "npm-run-all2": "^6.0.6",
+    "rimraf": "^5.0.1",
     "serve": "^14.2.0"
   }
 }
