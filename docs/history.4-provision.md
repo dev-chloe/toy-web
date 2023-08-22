@@ -254,6 +254,9 @@ dig <CNAME>
 
 5. Create Distribution
 
+    Set error pages > custom error response >
+    `403:Forbidden` + `/404.html`
+
 6. Update origin S3 bucket policy:
 
     ```json
