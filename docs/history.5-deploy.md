@@ -70,6 +70,11 @@ ls -shl "./build/."
 export TARGET_WEB_BUCKET="web.dev.poc-in.site"
 env | grep "TARGET_WEB_BUCKET"
 
+# Set AWS profile in cli
+export AWS_PROFILE="web-deployer-to-dev"
+# Check
+aws sts get-caller-identity --out=json | jq
+
 # Check current state of remote S3 bucket(target)
 aws s3 ls "s3://${TARGET_WEB_BUCKET:?}"
 # (option) Remove objects in target bucket
@@ -81,4 +86,47 @@ aws s3 sync "./build/." "s3://${TARGET_WEB_BUCKET:?}"
 aws s3 ls "s3://${TARGET_WEB_BUCKET:?}"
 
 # TODO: Refresh cache data in CloudFront(CDN)
+```
+
+## C. Publish git-tag to GitHub Repository
+
+### Create new tag
+
+```bash
+# Set sementic versioning
+export NEW_VERSION=$(jq '.version' package.json | tr -d '"')
+export NEW_MESSAGE="🎉 Release version '${NEW_VERSION}'"
+env | grep NEW_
+
+# Create new tag on current commit of branch
+# with commit hash, annotation and message
+git tag \
+    --annotate "${NEW_VERSION}" \
+    --message "${NEW_MESSAGE}"
+
+# Check created tag on list
+git tag --list ${NEW_VERSION}
+
+# Check created tag with detail
+git show ${NEW_VERSION}
+
+# Push this tags on this branch to remote
+git push origin $(git branch --show-current) --tags
+
+# Check on log
+git log --oneline
+```
+
+### Remove a tag
+
+```bash
+# Set sementic versioning
+export TARGET_VERSION="0.1.0"
+env | grep TARGET_VERSION
+
+# Remove a tag with pick
+git tag --delete ${TARGET_VERSION}
+
+# Remove the removed tag at the remote repository (origin)
+git push origin ":${TARGET_VERSION}"
 ```
