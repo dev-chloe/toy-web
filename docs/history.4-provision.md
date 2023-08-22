@@ -222,12 +222,84 @@ dig <CNAME>
 > Tier: `web`  
 > Distribution name: `web.dev.poc-in.site`
 
-```bash
-# Check the DNS record
-nslookup <CNAME>
-# or
-dig <CNAME>
-```
+1. Click Create Distribution
+2. Set origin configuration:  
+
+    > **Origin domain**: `web.dev.poc-in.site.s3.ap-northeast-2.amazonaws.com`  
+    > **Name**: `web.dev.poc-in.site`  
+    > **Origin access control**: (Create new OAC config with description)  
+    > --> `S3 Origin Access Control - sign requests`
+    >
+    > ---
+    >
+    > ! Policy must allow access to CloudFront IAM service principal role.
+    > ==> Set on no.6
+
+3. Set basic cache behavior:
+
+    > **Viewer protocol policy**: `Redirect HTTP to HTTPS`  
+    > **Cache key & origin request**: `CORS-S3Origin`
+
+4. Set config:
+
+    > **Alternative domain name(CNAME)**: `web.dev.poc-in.site`  
+    > **Custom SSL Certificate**: `*.dev.poc-in.site`  
+    > **Surport HTTP versions**:  
+    >
+    > - [X] HTTP/2
+    > - [X] HTTP/3
+    >  
+    > **Default root object**: `index.html`  
+    > **Description**: `dev/web`
+
+5. Create Distribution
+
+6. Update origin S3 bucket policy:
+
+    ```json
+    {
+        "Version": "2008-10-17",
+        "Id": "PolicyForCloudFrontPrivateContent",
+        "Statement": [
+            {
+                "Sid": "AllowCloudFrontServicePrincipal",
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "cloudfront.amazonaws.com"
+                },
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::web.dev.poc-in.site/*",
+                "Condition": {
+                    "StringEquals": {
+                      "AWS:SourceArn": "arn:aws:cloudfront::111111111111:distribution/{______________}"
+                    }
+                }
+            }
+        ]
+    }
+    ```
+
+7. Update origin S3 bucket CORS setting:
+
+    ```json
+    [
+        {
+            "AllowedHeaders": [
+                "Authorization",
+                "Content-Length"
+            ],
+            "AllowedMethods": [
+                "GET",
+                "HEAD"
+            ],
+            "AllowedOrigins": [
+                "https://web.dev.poc-in.site"
+            ],
+            "ExposeHeaders": [],
+            "MaxAgeSeconds": 3000
+        }
+    ]
+    ```
 
 ### C-3. Regist distribution's CNAME to owned Domain Name Server (e.g gabia)
 
